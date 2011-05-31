@@ -28,25 +28,10 @@ module Spree::Search
     end
 
     def prepare(params)
+      super(params)
       @properties[:facets_hash] = params[:facets] || {}
-      @properties[:taxon] = params[:taxon].blank? ? nil : Taxon.find(params[:taxon])
-      @properties[:keywords] = params[:keywords]
-      per_page = params[:per_page].to_i
-      @properties[:per_page] = per_page > 0 ? per_page : Spree::Config[:products_per_page]
-      @properties[:page] = (params[:page].to_i <= 0) ? 1 : params[:page].to_i
       @properties[:manage_pagination] = true
       @properties[:order_by_price] = params[:order_by_price]
-      if !params[:order_by_price].blank?
-        @product_group = ProductGroup.new.from_route([params[:order_by_price]+"_by_master_price"])
-      elsif params[:product_group_name]
-        @cached_product_group = ProductGroup.find_by_permalink(params[:product_group_name])
-        @product_group = ProductGroup.new
-      elsif params[:product_group_query]
-        @product_group = ProductGroup.new.from_route(params[:product_group_query].split("/"))
-      else
-        @product_group = ProductGroup.new
-      end
-      @product_group = @product_group.from_search(params[:search]) if params[:search]
     end
 
 private
